@@ -1,142 +1,314 @@
 package testing;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.Duration;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-class Assignments {
-private WebDriver driver;
+import io.netty.handler.timeout.TimeoutException;
 
-		 @BeforeEach
-		    void setUp() throws Exception {
-		        
-		        driver = new ChromeDriver(); 
-		    }
+class StudentDiscussion {
+	  private WebDriver driver;
+	   private WebDriverWait wait;
 
-		    @AfterEach
-		    void tearDown() {
-		        if (driver != null) {
-		            driver.quit(); 
-		        }
-		    }
+	    @BeforeEach
+	    void setUp() {
+	        driver = new ChromeDriver();
+	        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+	    }
 
-		    private void loadHomePage() {
-		        driver.get("http://localhost:3000/assignments"); 
-		    }
-		    @Test
-		    public void testCoursesList() {
-		    	loadHomePage();
 
-		        try {
-		            
-		            Thread.sleep(2000);
+	@AfterEach
+	void tearDown() throws Exception {
+	}
 
-		           
-		            WebElement courseList = driver.findElement(By.className("courses-list"));
-		            assertNotNull(courseList, "Courses list is not displayed.");
-		        } catch (Exception e) {
-		            fail("Test failed: " + e.getMessage());
-		        }
-		    }
-		    @Test
-		    public void testCourseSelection() {
-		    	loadHomePage();
+ 
 
-		        try {
-		            
-		            Thread.sleep(2000);
 
-		          
-		            WebElement courseCard = driver.findElement(By.className("course-card"));
-		            courseCard.click();
+    @Test
+    void teststudentviewcoursesfield() {
+        driver.get("http://localhost:3000/student");
 
-		          
-		            WebElement assignmentsForm = driver.findElement(By.className("assignments-form"));
-		            assertNotNull(assignmentsForm, "Assignments form is not displayed after selecting a course.");
-		        } catch (Exception e) {
-		            fail("Test failed: " + e.getMessage());
-		        }
-		    }
-		    @Test
-		    public void testAddAssignmentbutton() {
-		    	loadHomePage();
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
 
-		        try {
-		            
-		            Thread.sleep(2000);
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
 
-		          
-		            WebElement courseCard = driver.findElement(By.className("course-card"));
-		            courseCard.click();
+         
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
 
-		          
-		            WebElement titleInput = driver.findElement(By.xpath("//input[@placeholder='Enter assignment title']"));
-		            titleInput.sendKeys("Test Assignment");
-                   WebElement submitButton = driver.findElement(By.xpath("//button[text()='Add Assignment']"));
-		            submitButton.click();
+          
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void testheading() {
+        driver.get("http://localhost:3000/student");
 
-		            
-		            WebElement assignment = driver.findElement(By.xpath("//p[text()='Test Assignment']"));
-		            assertNotNull(assignment, "Assignment was not added successfully.");
-		        } catch (Exception e) {
-		            fail("Test failed: " + e.getMessage());
-		        }
-		    }
-		    @Test
-		    public void testLoadingIndicator() {
-		    	loadHomePage();
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
 
-		        try {
-		           
-		            Thread.sleep(2000);
-		            WebElement loadingMessage = driver.findElement(By.xpath("//p[text()='Loading courses...']"));
-		            assertNotNull(loadingMessage, "Loading message is not displayed.");
-		        } catch (Exception e) {
-		            fail("Test failed: " + e.getMessage());
-		        }
-		    }
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
 
-		    @Test
-		    public void testErrorMessageOnFailedCourseLoad() {
-		        try {
-		            loadHomePage();  
-		            WebElement errorMessage = driver.findElement(By.className("error-message"));
-		            assertNotNull("Error message should be displayed when the courses fail to load.", errorMessage);
+        
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
 
-		            String errorText = errorMessage.getText();
-		            assertEquals("Failed to load courses. Please try again later.", errorText);
-		        } catch (Exception e) {
-		            fail("Test failed: " + e.getMessage());
-		        }
-		    }
 
-		 
-		        @Test
-		        void testheading() {
-		         loadHomePage();
-		         WebElement header = driver.findElement(By.xpath("/html/body/div/div/div[2]/h2"));
-		         boolean checking = header.isSelected();
-		         Assert.assertNotNull(header);
-		        }
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+            
+            WebElement header = driver.findElement(By.xpath("/html/body/div/div/main/h2"));
+	         boolean checking = header.isSelected();
+	         Assert.assertNotNull(header);
+	        
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void testenrollbutton() {
+        driver.get("http://localhost:3000/student");
 
-		        @Test
-		        void testwrongHeading() {
-		         loadHomePage();
-		         WebElement heading = driver.findElement(By.xpath("/html/body/div/div/div[2]/h2"));
-		        	String expectedHeading = "About";
-		        	String actualHeading = heading.getText();
-		        	assertEquals(expectedHeading, actualHeading, "The heading should match");
-		        }
-		    }
-		
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
+
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
+
+          
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
+
+
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+
+            WebElement enrollButton = wait.until(ExpectedConditions.elementToBeClickable(By.className("enroll-1")));
+            assertNotNull(enrollButton, "Enroll button is missing.");
+            enrollButton.click();
+
+
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
+
+        
+            wait.until(ExpectedConditions.urlContains("/enrolled-courses"));
+            String currentUrl1 = driver.getCurrentUrl();
+            assertTrue(currentUrl1.contains("/enrolled-courses"), "Login failed: Expected to be redirected to enrolled courses.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void testheading1() {
+        driver.get("http://localhost:3000/student");
+
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
+
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
+
+
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
+
+          
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+            
+            WebElement header1 = driver.findElement(By.xpath("/html/body/div/div/main/div/div[1]/h3"));
+	         boolean checking = header1.isSelected();
+	         Assert.assertNotNull(header1);
+	        
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void testwrongparagraph() {
+        driver.get("http://localhost:3000/student");
+
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
+
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
+
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
+
+          
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+
+       
+            WebElement paragraph = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[contains(text(),'Student Dashboard')]"))); // Update based on actual paragraph
+            String actualText = paragraph.getText().trim();
+            String expectedText = "student"; // Update based on actual content
+            Assert.assertEquals(actualText, expectedText, "Paragraph content does not match.");
+            System.out.println("Test passed: Paragraph content matches.");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    
+    @Test
+    void testparagraph() {
+        driver.get("http://localhost:3000/student");
+
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
+
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
+
+          
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
+
+           
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+  
+         
+            
+            WebElement Description = driver.findElement(By.xpath("/html/body/div/div/main/div/div[1]/p[1]"));
+	         boolean checking = Description .isSelected();
+	         Assert.assertNotNull(Description );
+	        
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Test
+    void testwrongheading() {
+        driver.get("http://localhost:3000/student");
+
+        try {
+            WebElement emailInput = driver.findElement(By.id("email1"));
+            WebElement passwordInput = driver.findElement(By.id("password1"));
+            WebElement loginButton = driver.findElement(By.className("login-button1"));
+
+            emailInput.sendKeys("happy22@gmail.com");
+            passwordInput.sendKeys("123456789");
+            loginButton.click();
+
+           
+            try {
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                alert.accept();
+                System.out.println("Alert accepted.");
+            } catch (TimeoutException e) {
+                System.out.println("No alert present.");
+            }
+
+        
+            wait.until(ExpectedConditions.urlContains("/studentdash"));
+            String currentUrl = driver.getCurrentUrl();
+            assertTrue(currentUrl.contains("/studentdash"), "Login failed: Expected to be redirected to student dashboard.");
+
+            WebElement heading = driver.findElement(By.xpath("/html/body/div/div/main/h2"));
+    		String expectedHeading = "About";
+    		String actualHeading = heading.getText();
+    		assertEquals(expectedHeading, actualHeading, "The heading should match");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+}
+
+
+
+
+
 
 
